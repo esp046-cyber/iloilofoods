@@ -1,0 +1,2107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Iloilo's Best Foods</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            color: white;
+            padding: 40px 20px;
+            margin-bottom: 30px;
+        }
+
+        h1 {
+            font-size: 1.8em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .subtitle {
+            font-size: 0.9em;
+            opacity: 0.9;
+        }
+
+        .search-filter {
+            background: white;
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+
+        .search-box {
+            width: 100%;
+            padding: 15px;
+            font-size: 1.1em;
+            border: 2px solid #667eea;
+            border-radius: 10px;
+            outline: none;
+            transition: all 0.3s;
+        }
+
+        .search-box:focus {
+            border-color: #764ba2;
+            box-shadow: 0 0 10px rgba(118, 75, 162, 0.3);
+        }
+
+        .filter-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+            flex-wrap: wrap;
+        }
+
+        .filter-btn {
+            padding: 8px 16px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 0.75em;
+        }
+
+        .filter-btn:hover {
+            background: #764ba2;
+            transform: translateY(-2px);
+        }
+
+        .filter-btn.active {
+            background: #764ba2;
+            box-shadow: 0 5px 15px rgba(118, 75, 162, 0.4);
+        }
+
+        .foods-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 25px;
+            margin-bottom: 40px;
+        }
+
+        .food-card {
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+
+        .food-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.3);
+        }
+
+        .food-image {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 3em;
+        }
+
+        .food-content {
+            padding: 20px;
+        }
+
+        .food-name {
+            font-size: 1.5em;
+            color: #333;
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+
+        .food-category {
+            display: inline-block;
+            padding: 5px 15px;
+            background: #667eea;
+            color: white;
+            border-radius: 15px;
+            font-size: 0.8em;
+            margin-bottom: 10px;
+        }
+
+        .food-description {
+            color: #666;
+            line-height: 1.6;
+            margin-top: 10px;
+        }
+
+        .rating {
+            color: #ffa500;
+            font-size: 1.2em;
+            margin-top: 10px;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            z-index: 1000;
+            padding: 20px;
+            overflow-y: auto;
+        }
+
+        .modal-content {
+            background: white;
+            max-width: 800px;
+            margin: 50px auto;
+            border-radius: 20px;
+            padding: 40px;
+            position: relative;
+        }
+
+        .close-btn {
+            position: absolute;
+            top: 20px;
+            right: 30px;
+            font-size: 2em;
+            cursor: pointer;
+            color: #666;
+            transition: color 0.3s;
+        }
+
+        .close-btn:hover {
+            color: #333;
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2em;
+            }
+            
+            .foods-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🍴 Iloilo's Best Foods</h1>
+            <p class="subtitle">Discover the authentic flavors of Iloilo City</p>
+        </header>
+
+        <div class="search-filter">
+            <input type="text" class="search-box" id="searchBox" placeholder="Search for your favorite Iloilo food...">
+            <div class="filter-buttons">
+                <button class="filter-btn active" data-category="all">All</button>
+                <button class="filter-btn" data-category="main">Main Dishes</button>
+                <button class="filter-btn" data-category="soup">Soups</button>
+                <button class="filter-btn" data-category="dessert">Desserts</button>
+                <button class="filter-btn" data-category="snack">Snacks</button>
+            </div>
+        </div>
+
+        <div class="foods-grid" id="foodsGrid"></div>
+    </div>
+
+    <div class="modal" id="foodModal">
+        <div class="modal-content" id="modalContent">
+            <span class="close-btn" onclick="closeModal()">&times;</span>
+        </div>
+    </div>
+
+    <script>
+        const foods = [
+            {
+                name: "La Paz Batchoy",
+                category: "soup",
+                icon: "🍜",
+                rating: "⭐⭐⭐⭐⭐",
+                description: "The most iconic Iloilo dish! A savory noodle soup with pork organs, crushed chicharon, and a rich broth.",
+                details: "Originating from La Paz district, this hearty soup combines fresh egg noodles, pork intestines, liver, and meat in a flavorful broth topped with crispy chicharon and green onions."
+            },
+            {
+                name: "KBL (Kadyos, Baboy, Langka)",
+                category: "soup",
+                icon: "🥘",
+                rating: "⭐⭐⭐⭐⭐",
+                description: "A sour soup made with pigeon peas, pork, and unripe jackfruit. A true Ilonggo comfort food.",
+                details: "This traditional soup showcases the unique combination of kadyos (pigeon peas), baboy (pork), and langka (jackfruit), cooked with batwan for a distinctive sour flavor."
+            },
+            {
+                name: "Chicken Inasal",
+                category: "main",
+                icon: "🍗",
+                rating: "⭐⭐⭐⭐⭐",
+                description: "Grilled chicken marinated in a special blend of calamansi, pepper, and achuete, served with rice.",
+                details: "Though popularized region-wide, Iloilo's version features perfectly charred chicken brushed with achuete oil, giving it a distinctive orange hue and smoky flavor."
+            },
+            {
+                name: "Pancit Molo",
+                category: "soup",
+                icon: "🥟",
+                rating: "⭐⭐⭐⭐⭐",
+                description: "A Filipino wonton soup with pork-filled dumplings in a clear, savory broth.",
+                details: "Named after the Molo district in Iloilo City, this Chinese-influenced soup features delicate pork wontons in a flavorful chicken broth."
+            },
+            {
+                name: "Biscocho",
+                category: "snack",
+                icon: "🍞",
+                rating: "⭐⭐⭐⭐",
+                description: "Twice-baked bread topped with butter and sugar, a perfect snack or pasalubong.",
+                details: "This crunchy, sweet bread has been an Iloilo favorite for generations, perfect with coffee or as a gift to bring home."
+            },
+            {
+                name: "Baye-Baye",
+                category: "dessert",
+                icon: "🍡",
+                rating: "⭐⭐⭐⭐",
+                description: "Sticky rice cake wrapped in banana leaves, with coconut and sugar.",
+                details: "A traditional Ilonggo delicacy made from ground glutinous rice mixed with coconut milk and sugar, steamed in banana leaves."
+            },
+            {
+                name: "Cansi",
+                category: "soup",
+                icon: "🍲",
+                rating: "⭐⭐⭐⭐⭐",
+                description: "Sour beef soup with bone marrow, similar to bulalo but with a tangy twist from batwan.",
+                details: "This hearty soup features tender beef shanks and bone marrow in a sour broth made distinctive by the native batwan fruit."
+            },
+            {
+                name: "Binakol",
+                category: "soup",
+                icon: "🥥",
+                rating: "⭐⭐⭐⭐",
+                description: "Chicken soup cooked in coconut water with lemongrass, giving it a light, refreshing flavor.",
+                details: "Traditionally cooked inside a bamboo tube or young coconut, this soup features chicken in sweet coconut water with tanglad and dahon ng sili."
+            },
+            {
+                name: "Puto",
+                category: "dessert",
+                icon: "🧁",
+                rating: "⭐⭐⭐⭐",
+                description: "Steamed rice cakes, soft and slightly sweet, often topped with cheese or salted egg.",
+                details: "Iloilo's version of this Filipino classic is particularly fluffy and often enjoyed with dinuguan or as a standalone snack."
+            },
+            {
+                name: "Piaya",
+                category: "dessert",
+                icon: "🥮",
+                rating: "⭐⭐⭐⭐",
+                description: "Flat, unleavened pastry filled with muscovado sugar, a sweet treat from nearby Negros but popular in Iloilo.",
+                details: "Though originally from Negros, this sweet flatbread filled with dark muscovado sugar is a beloved snack throughout Iloilo."
+            },
+            {
+                name: "Laswa",
+                category: "soup",
+                icon: "🥗",
+                rating: "⭐⭐⭐⭐",
+                description: "A simple vegetable soup with malunggay, squash, okra, and other fresh vegetables.",
+                details: "This healthy, light soup showcases the freshest local vegetables in a simple but flavorful broth, often flavored with small shrimp or fish."
+            },
+            {
+                name: "Tatay's",
+                category: "snack",
+                icon: "🥙",
+                rating: "⭐⭐⭐⭐",
+                description: "Famous local burgers and empanadas, a favorite among locals and students.",
+                details: "An Iloilo institution, Tatay's serves affordable and delicious burgers, empanadas, and other quick bites that have been favorites for decades."
+            },
+            {
+                name: "Dinuguan",
+                category: "main",
+                icon: "🍛",
+                rating: "⭐⭐⭐⭐",
+                description: "Pork blood stew with meat and chilies, rich and savory, best eaten with puto.",
+                details: "Iloilo's version of this blood stew is particularly well-balanced, with the right amount of sourness and spice, traditionally paired with steamed puto."
+            },
+            {
+                name: "Barquillos",
+                category: "snack",
+                icon: "🥖",
+                rating: "⭐⭐⭐⭐",
+                description: "Crispy rolled wafer cookies, a popular pasalubong item from Iloilo.",
+                details: "These thin, crispy rolled wafers have been made in Iloilo for generations, perfect as a light snack or gift."
+            },
+            {
+                name: "Butterscotch",
+                category: "dessert",
+                icon: "🍬",
+                rating: "⭐⭐⭐⭐",
+                description: "Locally made butterscotch candies, sweet and buttery, another great pasalubong.",
+                details: "Iloilo's homemade butterscotch is rich, creamy, and makes for a perfect sweet treat or gift to bring home."
+            },
+            {
+                name: "Linagpang na Manok",
+                category: "main",
+                icon: "🔥",
+                rating: "⭐⭐⭐⭐",
+                description: "Grilled chicken with a smoky flavor, simpler than inasal but equally delicious.",
+                details: "This traditionally prepared chicken is grilled over open flames, giving it an authentic smoky flavor that's distinctly Ilonggo."
+            },
+            {
+                name: "Tinu-om na Talaba",
+                category: "main",
+                icon: "🦪",
+                rating: "⭐⭐⭐⭐⭐",
+                description: "Fresh oysters wrapped in banana leaves and grilled, a seafood delicacy.",
+                details: "Fresh Iloilo oysters are wrapped with native herbs and seasonings in banana leaves, then grilled to perfection."
+            },
+            {
+                name: "Suman",
+                category: "dessert",
+                icon: "🍱",
+                rating: "⭐⭐⭐⭐",
+                description: "Sticky rice wrapped in banana or coconut leaves, often served with ripe mango.",
+                details: "This glutinous rice delicacy comes in various forms in Iloilo, from the simple latik-topped version to more elaborate preparations."
+            },
+            {
+                name: "Inday-Inday",
+                category: "dessert",
+                icon: "🍮",
+                rating: "⭐⭐⭐⭐",
+                description: "A sweet delicacy made from glutinous rice flour and coconut, similar to palitaw.",
+                details: "These oval-shaped treats are made from ground glutinous rice, shaped, boiled, and then coated in coconut and sugar."
+            },
+            {
+                name: "Pansit Efuven",
+                category: "main",
+                icon: "🍝",
+                rating: "⭐⭐⭐⭐",
+                description: "A Chinese-influenced noodle dish with thick egg noodles, vegetables, and meat.",
+                details: "This hearty stir-fried noodle dish showcases Iloilo's Chinese culinary influence with its thick, chewy noodles and savory sauce."
+            },
+            {
+                name: "Palabok",
+                category: "main",
+                icon: "🦐",
+                rating: "⭐⭐⭐⭐",
+                description: "Rice noodles with shrimp sauce, topped with eggs, chicharon, and shrimp.",
+                details: "Iloilo's version of this Filipino favorite features a rich shrimp-based sauce over thin rice noodles, generously topped with traditional garnishes."
+            },
+            {
+                name: "Buko Pie",
+                category: "dessert",
+                icon: "🥧",
+                rating: "⭐⭐⭐⭐",
+                description: "Young coconut pie with a flaky crust, a sweet and creamy dessert.",
+                details: "Made with fresh young coconut meat in a sweet custard filling, this pie has a perfectly flaky crust and creamy interior."
+            },
+            {
+                name: "Humba",
+                category: "main",
+                icon: "🥩",
+                rating: "⭐⭐⭐⭐⭐",
+                description: "Braised pork belly in a sweet-savory sauce, similar to adobo but sweeter.",
+                details: "This Visayan braised pork dish features tender pork belly cooked in soy sauce, vinegar, and sugar with salted black beans, creating a perfect balance of flavors."
+            },
+            {
+                name: "Linaga",
+                category: "soup",
+                icon: "🍖",
+                rating: "⭐⭐⭐⭐",
+                description: "A simple beef soup with vegetables, comfort food at its best.",
+                details: "This clear beef soup with potatoes, cabbage, and other vegetables is the ultimate Filipino comfort food, perfect for rainy days."
+            },
+            {
+                name: "Ginamos Rice",
+                category: "main",
+                icon: "🍚",
+                rating: "⭐⭐⭐⭐",
+                description: "Fried rice with fermented fish paste, giving it a unique umami flavor.",
+                details: "This distinctive fried rice incorporates ginamos (fermented fish paste), creating a savory, umami-rich dish that's uniquely Ilonggo."
+            },
+            {
+                name: "Oyster Omelette",
+                category: "main",
+                icon: "🦪",
+                rating: "⭐⭐⭐⭐",
+                description: "Fresh Iloilo oysters cooked in fluffy eggs, a local seafood favorite.",
+                details: "Using the freshest oysters from local waters, this simple but delicious dish highlights the natural sweetness of Iloilo oysters combined with perfectly cooked eggs."
+            },
+            {
+                name: "Sinanlag",
+                category: "main",
+                icon: "🐟",
+                rating: "⭐⭐⭐⭐",
+                description: "Grilled or roasted fish stuffed with tomatoes and onions, wrapped in banana leaves.",
+                details: "Fresh fish is stuffed with native tomatoes, onions, and ginger, then wrapped in banana leaves and grilled for a smoky, aromatic flavor."
+            },
+            {
+                name: "Apan-Apan",
+                category: "snack",
+                icon: "🥥",
+                rating: "⭐⭐⭐⭐",
+                description: "Coconut strips glazed with sugar syrup, a sweet and chewy snack.",
+                details: "Young coconut meat is cut into strips and cooked in caramelized sugar, creating a chewy, sweet delicacy that's perfect as a snack or dessert."
+            },
+            {
+                name: "Pinasugbo",
+                category: "snack",
+                icon: "🍌",
+                rating: "⭐⭐⭐⭐",
+                description: "Caramelized banana strips, crispy and sweet, a popular street food.",
+                details: "Cardava banana is sliced lengthwise, deep-fried, and coated in caramelized sugar, resulting in a crispy, sweet treat that's hard to resist."
+            },
+            {
+                name: "Nilupak",
+                category: "dessert",
+                icon: "🍠",
+                rating: "⭐⭐⭐⭐",
+                description: "Mashed cassava or sweet potato mixed with coconut and butter.",
+                details: "This traditional Ilonggo dessert is made by pounding cooked cassava or sweet potato with butter, coconut milk, and sugar until creamy and smooth."
+            },
+            {
+                name: "Budbud Kabog",
+                category: "dessert",
+                icon: "🌾",
+                rating: "⭐⭐⭐⭐",
+                description: "Sticky millet cake wrapped in banana leaves, a native delicacy.",
+                details: "Made from kabog (millet), this traditional rice cake alternative is cooked in coconut milk and wrapped in banana leaves, offering a unique grainy texture."
+            },
+            {
+                name: "Lechon Manok",
+                category: "main",
+                icon: "🍗",
+                rating: "⭐⭐⭐⭐⭐",
+                description: "Rotisserie chicken with crispy skin and juicy meat, often served with liver sauce.",
+                details: "Whole chicken marinated in a special blend of spices and slowly roasted on a spit until the skin is golden and crispy."
+            },
+            {
+                name: "Tinola",
+                category: "soup",
+                icon: "🥣",
+                rating: "⭐⭐⭐⭐",
+                description: "Ginger chicken soup with green papaya and chili leaves.",
+                details: "This comforting soup features chicken pieces in a clear ginger broth with green papaya and malunggay or chili leaves, perfect for any time of day."
+            },
+            {
+                name: "Pork BBQ",
+                category: "main",
+                icon: "�串",
+                rating: "⭐⭐⭐⭐⭐",
+                description: "Marinated pork skewers grilled to perfection, sweet and savory.",
+                details: "Tender pork pieces marinated in a sweet-savory sauce with calamansi and spices, then grilled over charcoal for that authentic Filipino BBQ flavor."
+            },
+            {
+                name: "Valenciana",
+                category: "main",
+                icon: "🍛",
+                rating: "⭐⭐⭐⭐",
+                description: "Filipino-style paella with glutinous rice, chicken, and vegetables.",
+                details: "This Spanish-influenced dish uses sticky rice cooked with chicken, chorizo, vegetables, and coconut milk, creating a rich and filling meal."
+            },
+            {
+                name: "Ginat-an",
+                category: "soup",
+                icon: "🥥",
+                rating: "⭐⭐⭐⭐",
+                description: "Vegetables and seafood cooked in rich coconut milk.",
+                details: "A creamy coconut milk-based stew featuring squash, string beans, shrimp, and other vegetables, seasoned with ginger and chili."
+            },
+            {
+                name: "Puto Maya",
+                category: "dessert",
+                icon: "🍚",
+                rating: "⭐⭐⭐⭐",
+                description: "Sweet sticky rice cooked in coconut milk, often served with ripe mango.",
+                details: "Purple or white glutinous rice cooked in coconut milk and sugar, traditionally eaten for breakfast with ripe mangoes and hot chocolate."
+            },
+            {
+                name: "Empanada",
+                category: "snack",
+                icon: "🥟",
+                rating: "⭐⭐⭐⭐",
+                description: "Deep-fried pastry filled with meat, vegetables, and egg.",
+                details: "Crispy pastry pockets filled with savory ground meat, potatoes, carrots, and sometimes a quail egg, perfect as a snack or light meal."
+            },
+            {
+                name: "Fresh Lumpia",
+                category: "snack",
+                icon: "🌯",
+                rating: "⭐⭐⭐⭐",
+                description: "Fresh spring rolls with vegetables, peanuts, and sweet garlic sauce.",
+                details: "Soft crepe-like wrapper filled with julienned vegetables, tofu, and peanuts, topped with a sweet garlic sauce and crushed peanuts."
+            },
+            {
+                name: "Kalabasang Ukoy",
+                category: "snack",
+                icon: "🎃",
+                rating: "⭐⭐⭐⭐",
+                description: "Squash fritters with small shrimp, crispy and flavorful.",
+                details: "Grated squash mixed with small shrimp in a light batter, deep-fried until golden and crispy, served with spiced vinegar dipping sauce."
+            },
+            {
+                name: "Inasal na Pata",
+                category: "main",
+                icon: "🦵",
+                rating: "⭐⭐⭐⭐⭐",
+                description: "Grilled pork leg marinated in local spices, crispy skin and tender meat.",
+                details: "Whole pork leg marinated in a blend of local spices and calamansi, then slow-grilled until the skin is crispy and the meat falls off the bone."
+            },
+            {
+                name: "Sinuglaw",
+                category: "main",
+                icon: "🐟",
+                rating: "⭐⭐⭐⭐⭐",
+                description: "A combination of sinugba (grilled pork) and kinilaw (ceviche), tangy and smoky.",
+                details: "This unique dish combines grilled pork belly with fresh raw fish marinated in vinegar, creating a perfect balance of smoky and tangy flavors."
+            },
+            {
+                name: "Guinataan",
+                category: "dessert",
+                icon: "🍨",
+                rating: "⭐⭐⭐⭐",
+                description: "Sweet coconut milk dessert with various ingredients like saba, ube, and tapioca pearls.",
+                details: "A sweet soup made with coconut milk, sugar, and various ingredients like plantains, sweet potato, jackfruit, and sago pearls."
+            },
+            {
+                name: "Callos",
+                category: "main",
+                icon: "🍲",
+                rating: "⭐⭐⭐⭐",
+                description: "Ox tripe stew in tomato sauce with chorizo and chickpeas.",
+                details: "This Spanish-influenced dish features tender ox tripe and chorizo in a rich tomato-based sauce with chickpeas, peppers, and olives."
+            },
+            {
+                name: "Arroz Caldo",
+                category: "soup",
+                icon: "🍚",
+                rating: "⭐⭐⭐⭐",
+                description: "Filipino rice porridge with chicken, ginger, and topped with eggs and green onions.",
+                details: "A comforting congee made with glutinous rice, chicken, ginger, and garlic, garnished with hard-boiled eggs, crispy garlic, and calamansi."
+            },
+            {
+                name: "Goto",
+                category: "soup",
+                icon: "🥣",
+                rating: "⭐⭐⭐⭐",
+                description: "Rice porridge with ox tripe, similar to arroz caldo but with beef innards.",
+                details: "This hearty porridge features tender ox tripe in a ginger-flavored rice soup, topped with chicharon, green onions, and a squeeze of calamansi."
+            },
+            {
+                name: "Pork Sinigang",
+                category: "soup",
+                icon: "🍋",
+                rating: "⭐⭐⭐⭐⭐",
+                description: "Sour tamarind soup with pork ribs and vegetables.",
+                details: "Iloilo's version of this classic Filipino soup uses fresh tamarind or batwan for sourness, with tender pork ribs and an abundance of vegetables."
+            },
+            {
+                name: "Paksiw na Isda",
+                category: "main",
+                icon: "🐠",
+                rating: "⭐⭐⭐⭐",
+                description: "Fish stewed in vinegar with ginger, garlic, and vegetables.",
+                details: "Fresh fish cooked in vinegar, ginger, garlic, and eggplant, creating a tangy, savory dish that pairs perfectly with steamed rice."
+            },
+            {
+                name: "Rellenong Bangus",
+                category: "main",
+                icon: "🐟",
+                rating: "⭐⭐⭐⭐⭐",
+                description: "Stuffed milkfish with vegetables and spices, a festive dish.",
+                details: "Deboned milkfish stuffed with a mixture of the fish meat, vegetables, raisins, and spices, then carefully sewn and fried or baked to perfection."
+            },
+            {
+                name: "Adobo",
+                category: "main",
+                icon: "🍖",
+                rating: "⭐⭐⭐⭐⭐",
+                description: "The Philippines' national dish - meat braised in vinegar, soy sauce, and garlic.",
+                details: "Iloilo's version of adobo features pork or chicken slowly braised in vinegar, soy sauce, garlic, and bay leaves until tender and flavorful."
+            },
+            {
+                name: "Igado",
+                category: "main",
+                icon: "🫀",
+                rating: "⭐⭐⭐⭐",
+                description: "Pork and liver stew in soy sauce and vinegar with bell peppers.",
+                details: "Tender pork strips and liver cooked in soy sauce, vinegar, and garlic with bell peppers and green peas, a savory Ilonggo favorite."
+            },
+            {
+                name: "Menudo",
+                category: "main",
+                icon: "🥘",
+                rating: "⭐⭐⭐⭐",
+                description: "Pork and liver stew in tomato sauce with potatoes and bell peppers.",
+                details: "Diced pork, liver, potatoes, and carrots in a savory tomato-based sauce with raisins, creating a sweet and savory Filipino classic."
+            },
+            {
+                name: "Mechado",
+                category: "main",
+                icon: "🥩",
+                rating: "⭐⭐⭐⭐",
+                description: "Beef stew with tomato sauce, potatoes, and bell peppers.",
+                details: "Tender beef chunks marinated in calamansi, then braised in tomato sauce with potatoes, carrots, and bell peppers until melt-in-your-mouth tender."
+            },
+            {
+                name: "Kare-Kare",
+                category: "main",
+                icon: "🥜",
+                rating: "⭐⭐⭐⭐⭐",
+                description: "Oxtail and vegetables in rich peanut sauce, served with bagoong.",
+                details: "This special occasion dish features oxtail, tripe, and vegetables in a thick peanut sauce, traditionally served with fermented shrimp paste."
+            },
+            {
+                name: "Lechon Kawali",
+                category: "main",
+                icon: "🥓",
+                rating: "⭐⭐⭐⭐⭐",
+                description: "Deep-fried crispy pork belly, served with liver sauce or vinegar.",
+                details: "Pork belly is boiled until tender, then deep-fried until the skin is incredibly crispy, served with a tangy liver sauce or spiced vinegar."
+            },
+            {
+                name: "Crispy Pata",
+                category: "main",
+                icon: "🦴",
+                rating: "⭐⭐⭐⭐⭐",
+                description: "Deep-fried pork leg with crispy skin and tender meat inside.",
+                details: "Whole pork leg boiled tender, air-dried, then deep-fried until the skin is crispy and golden, served with a soy-vinegar dipping sauce."
+            },
+            {
+                name: "Sisig",
+                category: "main",
+                icon: "🔥",
+                rating: "⭐⭐⭐⭐⭐",
+                description: "Sizzling chopped pork face and ears, seasoned and served on a hot plate.",
+                details: "Finely chopped pig's face and ears, seasoned with calamansi, onions, and chili peppers, served sizzling with a raw egg on top."
+            },
+            {
+                name: "Tokwa't Baboy",
+                category: "snack",
+                icon: "🧊",
+                rating: "⭐⭐⭐⭐",
+                description: "Fried tofu and boiled pork with onions in a soy-vinegar sauce.",
+                details: "Crispy fried tofu cubes and tender boiled pork served with onions in a tangy soy-vinegar dressing, perfect as pulutan or appetizer."
+            },
+            {
+                name: "Lumpiang Shanghai",
+                category: "snack",
+                icon: "🌭",
+                rating: "⭐⭐⭐⭐⭐",
+                description: "Deep-fried spring rolls filled with ground pork and vegetables.",
+                details: "Thin crispy spring rolls filled with seasoned ground pork, carrots, and onions, served with sweet and sour sauce or banana ketchup."
+            },
+            {
+                name: "Ukoy",
+                category: "snack",
+                icon: "🦐",
+                rating: "⭐⭐⭐⭐",
+                description: "Crispy shrimp fritters with sweet potato, served with vinegar dip.",
+                details: "Small shrimp and grated sweet potato mixed in batter and deep-fried into crispy patties, served with spiced vinegar dipping sauce."
+            },
+            {
+                name: "Calamares",
+                category: "snack",
+                icon: "🦑",
+                rating: "⭐⭐⭐⭐",
+                description: "Battered and deep-fried squid rings, crispy and tender.",
+                details: "Fresh squid rings coated in seasoned batter and deep-fried until golden and crispy, served with garlic mayo or sweet chili sauce."
+            },
+            {
+                name: "Fish Balls",
+                category: "snack",
+                icon: "⚽",
+                rating: "⭐⭐⭐⭐",
+                description: "Deep-fried fish paste balls, a popular street food.",
+                details: "Round balls made from ground fish meat, deep-fried and skewered, served with sweet, spicy, or vinegar-based sauces."
+            },
+            {
+                name: "Banana Cue",
+                category: "snack",
+                icon: "🍌",
+                rating: "⭐⭐⭐⭐",
+                description: "Deep-fried caramelized bananas on a stick, a classic street food.",
+                details: "Saba bananas coated in caramelized brown sugar and deep-fried until crispy outside and soft inside, served on bamboo skewers."
+            },
+            {
+                name: "Turon",
+                category: "snack",
+                icon: "🍥",
+                rating: "⭐⭐⭐⭐⭐",
+                description: "Fried banana spring rolls with jackfruit and caramelized sugar.",
+                details: "Sliced saba bananas and jackfruit wrapped in spring roll wrappers, deep-fried with brown sugar until crispy and caramelized."
+            },
+            {
+                name: "Maruya",
+                category: "snack",
+                icon: "🥞",
+                rating: "⭐⭐⭐⭐",
+                description: "Banana fritters in sweet batter, soft and fluffy.",
+                details: "Ripe saba bananas coated in a sweet batter and deep-fried, creating a soft, cake-like fritter dusted with sugar."
+            },
+            {
+                name: "Halo-Halo",
+                category: "dessert",
+                icon: "🍧",
+                rating: "⭐⭐⭐⭐⭐",
+                description: "The ultimate Filipino dessert with shaved ice, milk, and various sweet toppings.",
+                details: "Shaved ice topped with sweet beans, fruits, jellies, ube, leche flan, ice cream, and evaporated milk - a refreshing mix-and-match dessert."
+            },
+            {
+                name: "Leche Flan",
+                category: "dessert",
+                icon: "🍮",
+                rating: "⭐⭐⭐⭐⭐",
+                description: "Filipino custard flan made with egg yolks and condensed milk.",
+                details: "Rich, creamy custard made with egg yolks, condensed milk, and evaporated milk, steamed and topped with caramelized sugar."
+            },
+            {
+                name: "Ube Halaya",
+                category: "dessert",
+                icon: "💜",
+                rating: "⭐⭐⭐⭐⭐",
+                description: "Purple yam jam, sweet and creamy, used in many Filipino desserts.",
+                details: "Grated purple yam cooked with condensed milk, coconut milk, and butter until thick and creamy, a versatile Filipino dessert staple."
+            },
+            {
+                name: "Bibingka",
+                category: "dessert",
+                icon: "🥥",
+                rating: "⭐⭐⭐⭐⭐",
+                description: "Rice cake cooked in clay pots, topped with salted egg and cheese.",
+                details: "Soft, fluffy rice cake made with rice flour, coconut milk, and eggs, traditionally cooked in clay pots lined with banana leaves."
+            },
+            {
+                name: "Kinunot",
+                category: "main",
+                icon: "🦈",
+                rating: "⭐⭐⭐⭐",
+                description: "Flaked fish in spicy coconut cream with malunggay leaves.",
+                details: "Shredded fish cooked in rich coconut cream with ginger, chili, and malunggay leaves, creating a spicy, creamy dish perfect with rice."
+            },
+            {
+                name: "Laing",
+                category: "main",
+                icon: "🌿",
+                rating: "⭐⭐⭐⭐",
+                description: "Taro leaves cooked in spicy coconut milk.",
+                details: "Dried taro leaves slowly simmered in coconut milk with shrimp paste, ginger, and chili peppers until creamy and flavorful."
+            },
+            {
+                name: "Pinakbet",
+                category: "main",
+                icon: "🥕",
+                rating: "⭐⭐⭐⭐",
+                description: "Mixed vegetables with shrimp paste, an Ilocano dish popular in Iloilo.",
+                details: "A medley of eggplant, okra, squash, bitter melon, and string beans sautéed with pork and shrimp paste for a savory vegetable dish."
+            },
+            {
+                name: "Pochero",
+                category: "soup",
+                icon: "🍖",
+                rating: "⭐⭐⭐⭐",
+                description: "Beef and vegetable stew with tomato sauce and saba bananas.",
+                details: "A Spanish-influenced stew with beef, chorizo, chickpeas, and vegetables including saba bananas, served with eggplant sauce on the side."
+            },
+            {
+                name: "Bulalo",
+                category: "soup",
+                icon: "🦴",
+                rating: "⭐⭐⭐⭐⭐",
+                description: "Beef shank soup with bone marrow and vegetables.",
+                details: "Tender beef shanks with rich bone marrow slow-cooked in clear broth with corn, cabbage, and other vegetables - the ultimate comfort soup."
+            },
+            {
+                name: "Singang",
+                category: "main",
+                icon: "🐟",
+                rating: "⭐⭐⭐⭐",
+                description: "Grilled fish marinated in vinegar and spices.",
+                details: "Fresh fish marinated in vinegar, garlic, ginger, and spices, then grilled over charcoal for a tangy, smoky flavor."
+            },
+            {
+                name: "Inihaw na Liempo",
+                category: "main",
+                icon: "🥓",
+                rating: "⭐⭐⭐⭐⭐",
+                description: "Grilled pork belly marinated in soy sauce and calamansi.",
+                details: "Thick slices of pork belly marinated in soy sauce, calamansi, garlic, and pepper, then grilled until crispy and caramelized."
+            },
+            {
+                name: "Tinolang Tahong",
+                category: "soup",
+                icon: "🦪",
+                rating: "⭐⭐⭐⭐",
+                description: "Mussel soup with ginger and vegetables.",
+                details: "Fresh mussels cooked in ginger broth with green papaya or chayote and malunggay leaves, light and flavorful."
+            },
+            {
+                name: "Kinilaw na Tanigue",
+                category: "main",
+                icon: "🐟",
+                rating: "⭐⭐⭐⭐⭐",
+                description: "Fresh tanigue ceviche marinated in vinegar, calamansi, and spices.",
+                details: "Fresh Spanish mackerel cubed and marinated in vinegar, calamansi, onions, ginger, and chili - Iloilo's version of ceviche."
+            },
+            {
+                name: "Adobong Pusit",
+                category: "main",
+                icon: "🦑",
+                rating: "⭐⭐⭐⭐",
+                description: "Squid cooked in soy sauce, vinegar, and squid ink.",
+                details: "Tender squid braised in soy sauce, vinegar, and its own ink, creating a rich, dark, and flavorful dish."
+            },
+            {
+                name: "Ginataang Alimasag",
+                category: "main",
+                icon: "🦀",
+                rating: "⭐⭐⭐⭐⭐",
+                description: "Crabs cooked in rich coconut milk with spices.",
+                details: "Fresh crabs simmered in creamy coconut milk with ginger, garlic, and chili peppers - a true seafood delicacy."
+            },
+            {
+                name: "Escabeche",
+                category: "main",
+                icon: "🐠",
+                rating: "⭐⭐⭐⭐",
+                description: "Sweet and sour fried fish with vegetables.",
+                details: "Whole fried fish topped with a sweet and sour sauce made with vinegar, sugar, bell peppers, and pineapple chunks."
+            },
+            {
+                name: "Lumpiang Ubod",
+                category: "snack",
+                icon: "🌴",
+                rating: "⭐⭐⭐⭐⭐",
+                description: "Fresh spring rolls with heart of palm, shrimp, and peanut sauce.",
+                details: "Delicate crepes filled with ubod (heart of palm), shrimp, pork, and vegetables, topped with sweet garlic sauce and crushed peanuts."
+            },
+            {
+                name: "Chorizo de Iloilo",
+                category: "main",
+                icon: "🌭",
+                rating: "⭐⭐⭐⭐⭐",
+                description: "Local sweet pork sausage, a specialty of Iloilo.",
+                details: "Iloilo's famous sweet sausage made with ground pork, sugar, salt, and spices, has a distinctive reddish color and sweet flavor."
+            },
+            {
+                name: "Longganisa",
+                category: "main",
+                icon: "🌭",
+                rating: "⭐⭐⭐⭐",
+                description: "Filipino pork sausage, sweet or garlicky depending on the region.",
+                details: "Local pork sausages seasoned with sugar, garlic, and spices, fried until caramelized and served with garlic rice and eggs."
+            },
+            {
+                name: "Tapa",
+                category: "main",
+                icon: "🥩",
+                rating: "⭐⭐⭐⭐",
+                description: "Cured and fried beef strips, part of the classic Filipino breakfast.",
+                details: "Thinly sliced beef marinated in soy sauce, calamansi, and garlic, then fried until slightly crispy - a breakfast favorite."
+            },
+            {
+                name: "Bangus Belly",
+                category: "main",
+                icon: "🐟",
+                rating: "⭐⭐⭐⭐⭐",
+                description: "Grilled milkfish belly, rich and flavorful.",
+                details: "The fatty belly portion of milkfish, marinated and grilled until crispy outside and tender inside - a premium seafood treat."
+            },
+            {
+                name: "Pinaupong Manok",
+                category: "main",
+                icon: "🍗",
+                rating: "⭐⭐⭐⭐",
+                description: "Whole chicken steamed upright with vegetables and spices.",
+                details: "Whole chicken seasoned and steamed in an upright position with rock salt and spices, resulting in tender, flavorful meat."
+            },
+            {
+                name: "Morcon",
+                category: "main",
+                icon: "🥩",
+                rating: "⭐⭐⭐⭐",
+                description: "Beef roulade stuffed with eggs, sausage, and pickles.",
+                details: "Thin beef slices rolled with hard-boiled eggs, sausage, pickles, and carrots, braised in tomato sauce until tender - a festive dish."
+            },
+            {
+                name: "Embutido",
+                category: "main",
+                icon: "🥖",
+                rating: "⭐⭐⭐⭐",
+                description: "Filipino meatloaf with eggs, raisins, and pickle relish.",
+                details: "Ground pork mixed with eggs, raisins, pickle relish, and spices, wrapped and steamed, then sliced and fried - perfect for celebrations."
+            },
+            {
+                name: "Hamonado",
+                category: "main",
+                icon: "🍖",
+                rating: "⭐⭐⭐⭐",
+                description: "Sweet pork stew with pineapple juice, similar to ham.",
+                details: "Pork chunks braised in sweet pineapple sauce with brown sugar, creating a ham-like flavor profile that's both sweet and savory."
+            },
+            {
+                name: "Afritada",
+                category: "main",
+                icon: "🥘",
+                rating: "⭐⭐⭐⭐",
+                description: "Chicken or pork stew in tomato sauce with bell peppers and potatoes.",
+                details: "Tender chicken or pork cooked in tomato sauce with potatoes, carrots, and bell peppers, similar to menudo but with larger meat pieces."
+            },
+            {
+                name: "Kaldereta",
+                category: "main",
+                icon: "🐐",
+                rating: "⭐⭐⭐⭐⭐",
+                description: "Rich goat or beef stew with liver paste and vegetables.",
+                details: "Tender goat or beef in a thick tomato-based sauce enriched with liver spread, peppers, olives, and cheese - a festive Filipino favorite."
+            },
+            {
+                name: "Pata Tim",
+                category: "main",
+                icon: "🦴",
+                rating: "⭐⭐⭐⭐",
+                description: "Braised pork leg in sweet soy sauce, Chinese-Filipino style.",
+                details: "Pork leg slowly braised in sweet soy sauce, star anise, and sugar until melt-in-your-mouth tender, served with bok choy."
+            },
+            {
+                name: "Siopao",
+                category: "snack",
+                icon: "🥟",
+                rating: "⭐⭐⭐⭐",
+                description: "Steamed buns filled with savory pork or chicken.",
+                details: "Soft, fluffy steamed buns filled with seasoned pork or chicken asado, a popular Chinese-Filipino snack available everywhere."
+            },
+            {
+                name: "Kwek-Kwek",
+                category: "snack",
+                icon: "🥚",
+                rating: "⭐⭐⭐⭐",
+                description: "Deep-fried quail eggs in orange batter, a popular street food.",
+                details: "Hard-boiled quail eggs coated in orange-colored batter and deep-fried until crispy, served with spiced vinegar dipping sauce."
+            },
+            {
+                name: "Isaw",
+                category: "snack",
+                icon: "🔥",
+                rating: "⭐⭐⭐⭐",
+                description: "Grilled chicken or pork intestines, a favorite street food.",
+                details: "Cleaned chicken or pork intestines marinated and grilled over charcoal, brushed with sauce for a smoky, savory street food favorite."
+            },
+            {
+                name: "Chicharon Bulaklak",
+                category: "snack",
+                icon: "🌸",
+                rating: "⭐⭐⭐⭐",
+                description: "Deep-fried ruffled pork mesentery, crispy and flavorful.",
+                details: "Ruffled pork intestine fat deep-fried until ultra-crispy, served with spiced vinegar - a popular beer companion."
+            },
+            {
+                name: "Sansrival",
+                category: "dessert",
+                icon: "🎂",
+                rating: "⭐⭐⭐⭐⭐",
+                description: "Layered cashew meringue cake with buttercream frosting.",
+                details: "Multiple layers of cashew meringue wafers sandwiched with French buttercream and topped with crushed cashews - a Filipino celebration cake."
+            },
+            {
+                name: "Silvanas",
+                category: "dessert",
+                icon: "🍪",
+                rating: "⭐⭐⭐⭐⭐",
+                description: "Frozen cashew meringue cookies with buttercream filling.",
+                details: "Crispy cashew meringue cookies filled with buttercream and coated with cookie crumbs, served frozen for a refreshing treat."
+            },
+            {
+                name: "Pinangat na Isda",
+                category: "main",
+                icon: "🐟",
+                rating: "⭐⭐⭐⭐",
+                description: "Fish stewed with tomatoes, ginger, and sour fruit.",
+                details: "Fresh fish cooked in tomatoes, ginger, onions, and kamias or tamarind for a tangy, savory stew that's perfect with rice."
+            },
+            {
+                name: "Sinigang na Hipon",
+                category: "soup",
+                icon: "🦐",
+                rating: "⭐⭐⭐⭐⭐",
+                description: "Sour shrimp soup with tamarind and vegetables.",
+                details: "Fresh shrimp in a tangy tamarind broth with tomatoes, radish, kangkong, and other vegetables - a seafood version of the classic soup."
+            },
+            {
+                name: "Ginataang Hipon",
+                category: "main",
+                icon: "🦐",
+                rating: "⭐⭐⭐⭐",
+                description: "Shrimp cooked in creamy coconut milk with vegetables.",
+                details: "Fresh shrimp simmered in rich coconut milk with squash, string beans, and chili peppers for a creamy, spicy dish."
+            },
+            {
+                name: "Sugba Kilaw",
+                category: "main",
+                icon: "🐷",
+                rating: "⭐⭐⭐⭐⭐",
+                description: "Grilled pork belly with vinegar-ceviche marinade.",
+                details: "Crispy grilled pork belly chopped and mixed with vinegar, onions, ginger, and chili - combining grilled and ceviche preparation methods."
+            },
+            {
+                name: "Kilawin",
+                category: "main",
+                icon: "🥩",
+                rating: "⭐⭐⭐⭐",
+                description: "Meat or seafood ceviche marinated in vinegar and spices.",
+                details: "Raw or lightly grilled meat or seafood marinated in vinegar, calamansi, onions, ginger, and chili peppers - a tangy appetizer."
+            },
+            {
+                name: "Tinumis",
+                category: "main",
+                icon: "🥘",
+                rating: "⭐⭐⭐⭐",
+                description: "Pork and tomato stew, a simple but flavorful dish.",
+                details: "Pork pieces simmered with tomatoes, onions, and garlic until tender and flavorful - a homey Ilonggo comfort food."
+            },
+            {
+                name: "Ginisang Monggo",
+                category: "soup",
+                icon: "🫘",
+                rating: "⭐⭐⭐⭐",
+                description: "Mung bean soup with pork, shrimp, and vegetables.",
+                details: "Mung beans cooked until soft with pork, shrimp, bitter melon, and malunggay leaves - a nutritious Filipino staple."
+            },
+            {
+                name: "Nilaga na Baka",
+                category: "soup",
+                icon: "🍲",
+                rating: "⭐⭐⭐⭐",
+                description: "Clear beef soup with vegetables and corn.",
+                details: "Tender beef boiled in clear broth with cabbage, potatoes, corn, and pechay - simple, comforting, and delicious."
+            },
+            {
+                name: "Kadyos Baboy Langka Soup",
+                category: "soup",
+                icon: "🥣",
+                rating: "⭐⭐⭐⭐⭐",
+                description: "Traditional Ilonggo soup with pigeon peas, pork, and jackfruit.",
+                details: "Another name for the famous KBL, featuring the unique combination of kadyos, pork, unripe jackfruit, and batwan for sourness."
+            },
+            {
+                name: "Pancit Sotanghon",
+                category: "main",
+                icon: "🍜",
+                rating: "⭐⭐⭐⭐",
+                description: "Glass noodle stir-fry with vegetables and meat.",
+                details: "Transparent bean thread noodles stir-fried with chicken, vegetables, and soy sauce - light yet flavorful."
+            },
+            {
+                name: "Pancit Bihon",
+                category: "main",
+                icon: "🍝",
+                rating: "⭐⭐⭐⭐",
+                description: "Rice noodle stir-fry with vegetables and meat.",
+                details: "Thin rice noodles stir-fried with pork or chicken, shrimp, vegetables, and soy sauce - a party and celebration staple."
+            },
+            {
+                name: "Pancit Canton",
+                category: "main",
+                icon: "🍜",
+                rating: "⭐⭐⭐⭐",
+                description: "Egg noodle stir-fry with vegetables and meat.",
+                details: "Thick egg noodles stir-fried with mixed vegetables, meat, and seafood in a savory sauce - hearty and satisfying."
+            },
+            {
+                name: "Arroz Valenciana",
+                category: "main",
+                icon: "🍚",
+                rating: "⭐⭐⭐⭐⭐",
+                description: "Filipino paella with glutinous rice, similar to Valenciana.",
+                details: "Sticky rice cooked with chicken, chorizo, vegetables, raisins, and coconut milk, creating a colorful festive dish."
+            },
+            {
+                name: "Champorado",
+                category: "dessert",
+                icon: "🍫",
+                rating: "⭐⭐⭐⭐",
+                description: "Chocolate rice porridge, sweet and comforting.",
+                details: "Glutinous rice cooked with cocoa powder and sugar until thick and creamy, traditionally served with dried fish for a sweet-salty combo."
+            },
+            {
+                name: "Ginataang Bilo-Bilo",
+                category: "dessert",
+                icon: "🍡",
+                rating: "⭐⭐⭐⭐",
+                description: "Sweet coconut soup with glutinous rice balls and fruits.",
+                details: "Coconut milk soup with rice balls, saba bananas, sweet potato, jackfruit, and tapioca pearls - warm and comforting dessert."
+            },
+            {
+                name: "Maja Blanca",
+                category: "dessert",
+                icon: "🥥",
+                rating: "⭐⭐⭐⭐⭐",
+                description: "Coconut pudding topped with latik, a Filipino favorite.",
+                details: "Creamy coconut milk pudding thickened with cornstarch, topped with toasted coconut curds for a sweet, creamy dessert."
+            },
+            {
+                name: "Cassava Cake",
+                category: "dessert",
+                icon: "🍰",
+                rating: "⭐⭐⭐⭐",
+                description: "Baked grated cassava with coconut milk and condensed milk.",
+                details: "Grated cassava mixed with coconut milk, condensed milk, and eggs, baked until golden and topped with custard."
+            },
+            {
+                name: "Pichi-Pichi",
+                category: "dessert",
+                icon: "🟢",
+                rating: "⭐⭐⭐⭐",
+                description: "Steamed cassava jelly topped with grated coconut.",
+                details: "Translucent cassava and sugar jelly steamed in molds, topped with freshly grated coconut or cheese for a chewy sweet treat."
+            },
+            {
+                name: "Kutsinta",
+                category: "dessert",
+                icon: "🟤",
+                rating: "⭐⭐⭐⭐",
+                description: "Brown rice cake with lye water, topped with grated coconut.",
+                details: "Sticky brown rice cake made with rice flour, brown sugar, and lye water, steamed and topped with grated coconut."
+            },
+            {
+                name: "Sapin-Sapin",
+                category: "dessert",
+                icon: "🌈",
+                rating: "⭐⭐⭐⭐⭐",
+                description: "Layered rice cake with different flavors and colors.",
+                details: "Beautiful layered glutinous rice dessert with ube, coconut, and jackfruit flavors, topped with latik and crushed peanuts."
+            },
+            {
+                name: "Palitaw",
+                category: "dessert",
+                icon: "⚪",
+                rating: "⭐⭐⭐⭐",
+                description: "Flat rice cakes boiled and coated with sesame, coconut, and sugar.",
+                details: "Flattened rice dough balls boiled until they float, then coated with sesame seeds, grated coconut, and sugar."
+            },
+            {
+                name: "Espasol",
+                category: "snack",
+                icon: "🥖",
+                rating: "⭐⭐⭐⭐",
+                description: "Cylindrical rice cake with toasted rice flour coating.",
+                details: "Sweet rice flour and coconut mixture rolled into cylinders and coated with toasted rice flour - a traditional pasalubong."
+            },
+            {
+                name: "Pastillas de Leche",
+                category: "dessert",
+                icon: "🍬",
+                rating: "⭐⭐⭐⭐",
+                description: "Milk candy made from carabao milk and sugar.",
+                details: "Sweet milk candies made by reducing carabao milk with sugar, traditionally wrapped in colorful papel de hapon."
+            },
+            {
+                name: "Yema",
+                category: "dessert",
+                icon: "🟡",
+                rating: "⭐⭐⭐⭐",
+                description: "Custard candy made from condensed milk and egg yolks.",
+                details: "Soft, creamy candies made from condensed milk and egg yolks, rolled in sugar - sweet and rich."
+            },
+            {
+                name: "Polvoron",
+                category: "snack",
+                icon: "🟡",
+                rating: "⭐⭐⭐⭐",
+                description: "Crumbly shortbread cookies that melt in your mouth.",
+                details: "Toasted flour, powdered milk, sugar, and butter pressed into molds, wrapped in paper - a classic Filipino snack."
+            },
+            {
+                name: "Ensaymada",
+                category: "dessert",
+                icon: "🧈",
+                rating: "⭐⭐⭐⭐⭐",
+                description: "Buttery brioche topped with butter, sugar, and cheese.",
+                details: "Soft, fluffy brioche rolls brushed with butter and topped with sugar and grated cheese - a Filipino bakery staple."
+            },
+            {
+                name: "Pan de Sal",
+                category: "snack",
+                icon: "🍞",
+                rating: "⭐⭐⭐⭐⭐",
+                description: "Filipino bread rolls, slightly sweet and perfect for breakfast.",
+                details: "Small, slightly sweet bread rolls with a distinctive dusty exterior - the most popular Filipino breakfast bread."
+            },
+            {
+                name: "Monay",
+                category: "snack",
+                icon: "🥖",
+                rating: "⭐⭐⭐⭐",
+                description: "Dense, slightly sweet bread rolls, a Filipino classic.",
+                details: "Round, dense bread rolls with a slightly sweet flavor and distinctive cross mark on top - perfect with coffee."
+            },
+            {
+                name: "Spanish Bread",
+                category: "snack",
+                icon: "🥐",
+                rating: "⭐⭐⭐⭐",
+                description: "Sweet bread rolls filled with buttery breadcrumb filling.",
+                details: "Soft bread rolls filled with sweet butter and breadcrumb mixture, rolled in breadcrumbs - a favorite merienda bread."
+            },
+            {
+                name: "Hopia",
+                category: "snack",
+                icon: "🥮",
+                rating: "⭐⭐⭐⭐",
+                description: "Flaky pastry filled with mung bean, ube, or other sweet fillings.",
+                details: "Chinese-Filipino pastry with flaky layers and sweet fillings like mung bean, ube, or mongo - a tea-time favorite."
+            },
+            {
+                name: "Tikoy",
+                category: "dessert",
+                icon: "🟤",
+                rating: "⭐⭐⭐⭐",
+                description: "Sticky rice cake traditionally eaten during Chinese New Year.",
+                details: "Sweet glutinous rice cake that's sliced and fried, becoming crispy outside and chewy inside - a New Year tradition."
+            },
+            {
+                name: "Chicken Binakol",
+                category: "soup",
+                icon: "🥥",
+                rating: "⭐⭐⭐⭐⭐",
+                description: "Chicken soup cooked in coconut water inside bamboo.",
+                details: "Traditional Ilonggo soup with chicken, lemongrass, and ginger cooked in fresh coconut water, giving it a naturally sweet flavor."
+            },
+            {
+                name: "Kansi",
+                category: "soup",
+                icon: "🦴",
+                rating: "⭐⭐⭐⭐⭐",
+                description: "Iloilo's signature sour beef soup with batwan fruit.",
+                details: "Similar to Cansi, this beef shank soup uses batwan (native souring fruit) giving it a unique tangy flavor distinct to Iloilo."
+            },
+            {
+                name: "Lapaz Batchoy Tagalog",
+                category: "soup",
+                icon: "🍜",
+                rating: "⭐⭐⭐⭐",
+                description: "Dry version of La Paz Batchoy without the soup.",
+                details: "Noodles topped with all the traditional batchoy ingredients but served without broth, mixed with sauce and chicharon."
+            },
+            {
+                name: "Roberto's Siopao",
+                category: "snack",
+                icon: "🥟",
+                rating: "⭐⭐⭐⭐⭐",
+                description: "Famous Iloilo siopao known for its large size and flavorful filling.",
+                details: "Iloilo's iconic siopao brand, famous for its jumbo-sized steamed buns with savory pork asado or bola-bola filling."
+            },
+            {
+                name: "Deco's La Paz Batchoy",
+                category: "soup",
+                icon: "🍜",
+                rating: "⭐⭐⭐⭐⭐",
+                description: "One of the original and most famous batchoy restaurants in Iloilo.",
+                details: "A legendary batchoy spot in La Paz district, known for its rich, authentic broth and generous toppings since 1938."
+            },
+            {
+                name: "Netong's Original Special La Paz Batchoy",
+                category: "soup",
+                icon: "🍜",
+                rating: "⭐⭐⭐⭐⭐",
+                description: "Another iconic La Paz Batchoy establishment in Iloilo.",
+                details: "Famous for their special batchoy with extra organ meats and rich broth, a must-try for batchoy enthusiasts."
+            },
+            {
+                name: "Breakthrough Restaurant Seafood",
+                category: "main",
+                icon: "🦐",
+                rating: "⭐⭐⭐⭐⭐",
+                description: "Fresh seafood dishes from Iloilo's famous seafood hub.",
+                details: "Located in Villa Beach, Breakthrough offers the freshest grilled seafood, from talaba to crabs, squid, and fish."
+            },
+            {
+                name: "Tatoy's Manokan and Seafood",
+                category: "main",
+                icon: "🍗",
+                rating: "⭐⭐⭐⭐⭐",
+                description: "Famous for native chicken and fresh seafood dishes.",
+                details: "Popular restaurant known for their native chicken inasal and fresh seafood preparations, a local favorite."
+            },
+            {
+                name: "Camiña Balay nga Bato Food",
+                category: "main",
+                icon: "🏛️",
+                rating: "⭐⭐⭐⭐",
+                description: "Traditional Ilonggo cuisine served in a heritage house setting.",
+                details: "Experience authentic Ilonggo dishes in a beautiful ancestral home, offering traditional recipes passed down through generations."
+            },
+            {
+                name: "Madge Cafe Pancit Molo",
+                category: "soup",
+                icon: "🥟",
+                rating: "⭐⭐⭐⭐⭐",
+                description: "Famous for their authentic Pancit Molo since 1978.",
+                details: "Iloilo institution serving the best pancit molo with perfectly seasoned wontons in flavorful broth."
+            },
+            {
+                name: "Ted's Oldtimer La Paz Batchoy",
+                category: "soup",
+                icon: "🍜",
+                rating: "⭐⭐⭐⭐⭐",
+                description: "One of the most popular batchoy chains from Iloilo.",
+                details: "Widely known batchoy restaurant with consistent quality, serving authentic La Paz batchoy throughout the city."
+            },
+            {
+                name: "Sutukil",
+                category: "main",
+                icon: "🐟",
+                rating: "⭐⭐⭐⭐⭐",
+                description: "Fish prepared three ways: sugba (grill), tula (soup), kilaw (ceviche).",
+                details: "A single fresh fish prepared in three different methods - grilled, in sour soup, and as ceviche - showcasing Ilonggo cooking."
+            },
+            {
+                name: "Inasal sa Dalan",
+                category: "main",
+                icon: "🍗",
+                rating: "⭐⭐⭐⭐",
+                description: "Street-style chicken inasal from roadside vendors.",
+                details: "Authentic street-style grilled chicken sold by roadside vendors, marinated and grilled fresh with unlimited rice."
+            },
+            {
+                name: "JD Bakeshop Biscocho",
+                category: "snack",
+                icon: "🍞",
+                rating: "⭐⭐⭐⭐",
+                description: "Popular biscocho brand in Iloilo, a favorite pasalubong.",
+                details: "One of Iloilo's famous biscocho makers, known for their crispy, buttery twice-baked bread."
+            },
+            {
+                name: "Deocampo Barquillos",
+                category: "snack",
+                icon: "🥖",
+                rating: "⭐⭐⭐⭐",
+                description: "Traditional barquillos makers in Iloilo since 1935.",
+                details: "Historic barquillos producer in Iloilo, making crispy rolled wafer cookies using traditional methods."
+            },
+            {
+                name: "Panaderia de Molo",
+                category: "snack",
+                icon: "🥐",
+                rating: "⭐⭐⭐⭐",
+                description: "Heritage bakery in Molo district serving traditional breads.",
+                details: "Old bakery in Molo serving classic Filipino breads and pastries using time-tested recipes."
+            },
+            {
+                name: "Kahon Restaurant KBL",
+                category: "soup",
+                icon: "🥘",
+                rating: "⭐⭐⭐⭐⭐",
+                description: "Modern take on traditional Ilonggo dishes including KBL.",
+                details: "Contemporary restaurant serving elevated versions of Ilonggo classics in a stylish setting."
+            },
+            {
+                name: "Fresh Talaba from Villa Beach",
+                category: "main",
+                icon: "🦪",
+                rating: "⭐⭐⭐⭐⭐",
+                description: "Fresh oysters from Iloilo's coast, served raw or grilled.",
+                details: "Iloilo is famous for fresh, plump oysters from Villa Beach and surrounding areas, best eaten fresh with spiced vinegar."
+            },
+            {
+                name: "Pasayan (Fresh Shrimp)",
+                category: "main",
+                icon: "🦐",
+                rating: "⭐⭐⭐⭐⭐",
+                description: "Fresh shrimp from Iloilo waters, various preparations.",
+                details: "Iloilo's fresh shrimp can be prepared multiple ways - grilled, buttered, in soup, or as kinilaw."
+            },
+            {
+                name: "Alimasag sa Aligue",
+                category: "main",
+                icon: "🦀",
+                rating: "⭐⭐⭐⭐⭐",
+                description: "Fresh crabs cooked in crab fat sauce.",
+                details: "Local crabs cooked in a rich sauce made from crab fat, creating an incredibly flavorful and indulgent dish."
+            },
+            {
+                name: "Kadios from Iloilo",
+                category: "main",
+                icon: "🫘",
+                rating: "⭐⭐⭐⭐",
+                description: "Native pigeon peas used in traditional Ilonggo cooking.",
+                details: "The key ingredient in KBL, these purple pigeon peas are grown locally and essential to authentic Ilonggo cuisine."
+            },
+            {
+                name: "Batwan Fruit",
+                category: "main",
+                icon: "🍋",
+                rating: "⭐⭐⭐⭐",
+                description: "Native souring fruit used in Ilonggo dishes.",
+                details: "This indigenous souring agent gives Ilonggo soups like KBL and Cansi their distinctive tangy flavor."
+            },
+            {
+                name: "Chicken Skin Chicharon",
+                category: "snack",
+                icon: "🍗",
+                rating: "⭐⭐⭐⭐",
+                description: "Deep-fried crispy chicken skin, a popular snack.",
+                details: "Chicken skin fried until ultra-crispy, seasoned with salt and spices - an addictive bar snack or street food."
+            },
+            {
+                name: "Pork Chicharon",
+                category: "snack",
+                icon: "🥓",
+                rating: "⭐⭐⭐⭐⭐",
+                description: "Crispy fried pork rinds, a Filipino favorite.",
+                details: "Deep-fried pork skin that puffs up into crispy, crunchy perfection - eaten as is or used as batchoy topping."
+            },
+            {
+                name: "Binuelos",
+                category: "dessert",
+                icon: "🍩",
+                rating: "⭐⭐⭐⭐",
+                description: "Deep-fried rice flour fritters in sweet syrup.",
+                details: "Rice flour balls deep-fried and coated in sweet sugar syrup or honey, a traditional Ilonggo sweet snack."
+            },
+            {
+                name: "Tamales",
+                category: "snack",
+                icon: "🫔",
+                rating: "⭐⭐⭐⭐",
+                description: "Rice cakes with meat and egg wrapped in banana leaves.",
+                details: "Ground rice mixture with chicken, pork, egg, and peanuts, wrapped in banana leaves and steamed - a festive food."
+            },
+            {
+                name: "Puto Cheese",
+                category: "dessert",
+                icon: "🧀",
+                rating: "⭐⭐⭐⭐",
+                description: "Steamed rice cakes topped with cheese.",
+                details: "Soft, fluffy puto with slices of cheese or grated cheese on top, creating a sweet and savory combination."
+            },
+            {
+                name: "Puto Bumbong",
+                category: "dessert",
+                icon: "💜",
+                rating: "⭐⭐⭐⭐",
+                description: "Purple rice cakes steamed in bamboo tubes, a Christmas tradition.",
+                details: "Purple glutinous rice steamed in bamboo tubes, topped with butter, coconut, and sugar - traditionally sold during Christmas season."
+            },
+            {
+                name: "Sans Rival Cakes (Local)",
+                category: "dessert",
+                icon: "🎂",
+                rating: "⭐⭐⭐⭐⭐",
+                description: "Iloilo's version of the famous layered cashew cake.",
+                details: "Local bakeries in Iloilo make excellent sans rival cakes, perfect as gifts or for special occasions."
+            },
+            {
+                name: "Ibus",
+                category: "dessert",
+                icon: "🌾",
+                rating: "⭐⭐⭐⭐",
+                description: "Native rice cake similar to suman but with different wrapping.",
+                details: "Glutinous rice cooked in coconut milk and wrapped in specific leaves, giving it a unique flavor and aroma."
+            },
+            {
+                name: "Linugaw",
+                category: "dessert",
+                icon: "🍚",
+                rating: "⭐⭐⭐⭐",
+                description: "Rice porridge that can be savory or sweet.",
+                details: "Comfort food made from rice cooked until soft, can be plain, with ginger, or sweetened with sugar."
+            },
+            {
+                name: "Pancit Molo Dumplings",
+                category: "snack",
+                icon: "🥟",
+                rating: "⭐⭐⭐⭐⭐",
+                description: "Fried version of pancit molo dumplings as a snack.",
+                details: "Pancit molo wontons that are fried until crispy instead of in soup, served as a crunchy snack or appetizer."
+            },
+            {
+                name: "Native Lechon Manok Iloilo Style",
+                category: "main",
+                icon: "🐔",
+                rating: "⭐⭐⭐⭐⭐",
+                description: "Roasted native chicken, more flavorful than regular chicken.",
+                details: "Native or free-range chicken roasted on a spit, has firmer texture and more intense flavor than commercial chicken."
+            },
+            {
+                name: "Bangus Sisig",
+                category: "main",
+                icon: "🐟",
+                rating: "⭐⭐⭐⭐",
+                description: "Milkfish version of sisig, flaked and seasoned on a hot plate.",
+                details: "Deboned bangus flaked and mixed with onions, chili, and calamansi, served sizzling - a seafood twist on sisig."
+            },
+            {
+                name: "Pusit Relleno",
+                category: "main",
+                icon: "🦑",
+                rating: "⭐⭐⭐⭐",
+                description: "Stuffed squid with vegetables and spices.",
+                details: "Whole squid stuffed with a mixture of ground pork, tomatoes, onions, and the squid tentacles, then cooked in sauce."
+            },
+            {
+                name: "Grilled Alimango",
+                category: "main",
+                icon: "🦀",
+                rating: "⭐⭐⭐⭐⭐",
+                description: "Grilled mud crabs, fresh from Iloilo waters.",
+                details: "Large mud crabs grilled and brushed with garlic butter or eaten plain with spiced vinegar - a seafood delicacy."
+            },
+            {
+                name: "Diwal",
+                category: "main",
+                icon: "🦪",
+                rating: "⭐⭐⭐⭐⭐",
+                description: "Angel wing shells, a rare and prized Iloilo delicacy.",
+                details: "Rare angel wing clams found in Iloilo's waters, usually grilled or eaten as kinilaw - considered a delicacy."
+            },
+            {
+                name: "Scallops Grilled",
+                category: "main",
+                icon: "🦪",
+                rating: "⭐⭐⭐⭐⭐",
+                description: "Fresh scallops grilled with butter and garlic.",
+                details: "Fresh scallops from Iloilo seas, grilled in their shells with garlic butter and cheese - incredibly sweet and tender."
+            },
+            {
+                name: "Sinigang sa Miso",
+                category: "soup",
+                icon: "🍲",
+                rating: "⭐⭐⭐⭐",
+                description: "Sour soup with miso paste base and vegetables.",
+                details: "Variation of sinigang using miso paste for added depth, with pork or fish and lots of vegetables."
+            },
+            {
+                name: "Lauya",
+                category: "soup",
+                icon: "🥣",
+                rating: "⭐⭐⭐⭐",
+                description: "Iloilo's version of beef soup with ginger and vegetables.",
+                details: "Similar to bulalo or nilaga but with more ginger, creating a warming, aromatic beef soup."
+            },
+            {
+                name: "Inun-unan",
+                category: "main",
+                icon: "🐟",
+                rating: "⭐⭐⭐⭐",
+                description: "Fish cooked in vinegar until dry, similar to paksiw.",
+                details: "Fish stewed in vinegar with minimal liquid until almost dry, resulting in intense flavors and tender fish."
+            },
+            {
+                name: "Pinamalhan",
+                category: "main",
+                icon: "🐟",
+                rating: "⭐⭐⭐⭐",
+                description: "Salted and sun-dried fish, an Ilonggo staple.",
+                details: "Various fish preserved with salt and dried under the sun, fried and eaten with rice and tomatoes."
+            },
+            {
+                name: "Tinapa Rice",
+                category: "main",
+                icon: "🐟",
+                rating: "⭐⭐⭐⭐",
+                description: "Fried rice with smoked fish, onions, and tomatoes.",
+                details: "Garlic fried rice mixed with flaked smoked fish, creating a flavorful breakfast or meal."
+            },
+            {
+                name: "Kadyos Manok",
+                category: "soup",
+                icon: "🍗",
+                rating: "⭐⭐⭐⭐",
+                description: "Pigeon pea soup with chicken instead of pork.",
+                details: "Similar to KBL but using chicken, creating a lighter version of the traditional Ilonggo soup."
+            },
+            {
+                name: "Ginisang Togue",
+                category: "main",
+                icon: "🌱",
+                rating: "⭐⭐⭐⭐",
+                description: "Stir-fried mung bean sprouts with vegetables.",
+                details: "Mung bean sprouts quickly stir-fried with carrots, tofu, and sometimes pork or shrimp - healthy and tasty."
+            },
+            {
+                name: "Tortang Talong",
+                category: "main",
+                icon: "🍆",
+                rating: "⭐⭐⭐⭐",
+                description: "Eggplant omelette, a Filipino vegetable dish.",
+                details: "Roasted eggplant flattened and dipped in beaten eggs, then fried until golden - simple but delicious."
+            },
+            {
+                name: "Guinataan na Alupe",
+                category: "soup",
+                icon: "🥥",
+                rating: "⭐⭐⭐⭐",
+                description: "Mushrooms cooked in coconut milk.",
+                details: "Local mushrooms simmered in coconut milk with ginger and chili - creamy and earthy flavored."
+            },
+            {
+                name: "Utan Bisaya",
+                category: "soup",
+                icon: "🥬",
+                rating: "⭐⭐⭐⭐",
+                description: "Vegetable soup with various local greens.",
+                details: "Mixed local vegetables in a simple broth, often with small dried fish or shrimp for flavor."
+            },
+            {
+                name: "Adobong Kangkong",
+                category: "main",
+                icon: "🥬",
+                rating: "⭐⭐⭐⭐",
+                description: "Water spinach cooked adobo-style with soy and vinegar.",
+                details: "Kangkong (water spinach) sautéed in garlic and cooked in soy sauce and vinegar - a simple vegetable dish."
+            },
+            {
+                name: "Ukoy-Ukoy",
+                category: "snack",
+                icon: "🥕",
+                rating: "⭐⭐⭐⭐",
+                description: "Mixed vegetable fritters, Iloilo street food.",
+                details: "Various vegetables mixed in batter and deep-fried into crispy patties, sold by street vendors."
+            },
+            {
+                name: "Shakoy",
+                category: "snack",
+                icon: "🍩",
+                rating: "⭐⭐⭐⭐",
+                description: "Twisted doughnuts coated in sugar, a Filipino snack.",
+                details: "Chewy, twisted doughnuts deep-fried and rolled in sugar - a popular afternoon snack or street food."
+            },
+            {
+                name: "Pilipit",
+                category: "snack",
+                icon: "🥨",
+                rating: "⭐⭐⭐⭐",
+                description: "Twisted fried dough similar to shakoy but crispier.",
+                details: "Deep-fried twisted pastry that's lighter and crispier than shakoy, coated in sugar."
+            },
+            {
+                name: "Banana Bread (Local Bakeries)",
+                category: "snack",
+                icon: "🍌",
+                rating: "⭐⭐⭐⭐",
+                description: "Moist banana bread from Iloilo bakeries.",
+                details: "Local bakeries make excellent banana bread using ripe saba bananas, moist and flavorful."
+            },
+            {
+                name: "Ube Bread",
+                category: "snack",
+                icon: "💜",
+                rating: "⭐⭐⭐⭐",
+                description: "Purple yam flavored bread from local bakeries.",
+                details: "Soft bread with ube filling or ube-flavored dough, a colorful and sweet Filipino bakery item."
+            },
+            {
+                name: "Cheese Bread",
+                category: "snack",
+                icon: "🧀",
+                rating: "⭐⭐⭐⭐",
+                description: "Soft bread topped with cheese, bakery favorite.",
+                details: "Soft, fluffy bread rolls topped with cheese before baking, creating a sweet and savory combination."
+            },
+            {
+                name: "Monggo Hopia",
+                category: "snack",
+                icon: "🥮",
+                rating: "⭐⭐⭐⭐",
+                description: "Hopia filled with sweetened mung bean paste.",
+                details: "The classic hopia variety with sweet mung bean filling in flaky pastry layers."
+            },
+            {
+                name: "Ube Hopia",
+                category: "snack",
+                icon: "💜",
+                rating: "⭐⭐⭐⭐",
+                description: "Hopia with purple yam filling.",
+                details: "Flaky pastry filled with sweet ube halaya, combining Chinese and Filipino flavors."
+            },
+            {
+                name: "Pandan Cake",
+                category: "dessert",
+                icon: "🍰",
+                rating: "⭐⭐⭐⭐",
+                description: "Light chiffon cake flavored with pandan.",
+                details: "Fluffy green cake made with pandan extract, popular in Iloilo bakeries and for celebrations."
+            },
+            {
+                name: "Ube Cake",
+                category: "dessert",
+                icon: "💜",
+                rating: "⭐⭐⭐⭐⭐",
+                description: "Purple yam cake, moist and flavorful.",
+                details: "Layered cake with ube flavor and ube buttercream frosting, a Filipino celebration favorite."
+            },
+            {
+                name: "Mango Float",
+                category: "dessert",
+                icon: "🥭",
+                rating: "⭐⭐⭐⭐⭐",
+                description: "No-bake dessert with mangoes, cream, and graham crackers.",
+                details: "Layers of graham crackers, sweetened cream, and ripe mangoes, chilled to create an icebox cake."
+            },
+            {
+                name: "Buko Salad",
+                category: "dessert",
+                icon: "🥥",
+                rating: "⭐⭐⭐⭐",
+                description: "Young coconut fruit salad with cream and condensed milk.",
+                details: "Fresh young coconut strips mixed with tropical fruits, cream, and condensed milk - refreshing and sweet."
+            },
+            {
+                name: "Fruit Salad",
+                category: "dessert",
+                icon: "🍇",
+                rating: "⭐⭐⭐⭐",
+                description: "Mixed canned fruits in sweetened cream.",
+                details: "Filipino-style fruit salad with various fruits, cream, condensed milk, and sometimes cheese - a party staple."
+            },
+            {
+                name: "Chicken Intestine BBQ",
+                category: "snack",
+                icon: "🍢",
+                rating: "⭐⭐⭐⭐",
+                description: "Grilled chicken intestines on skewers, street food favorite.",
+                details: "Cleaned chicken intestines marinated and grilled, served on bamboo skewers with vinegar dip - popular street food."
+            },
+            {
+                name: "Betamax",
+                category: "snack",
+                icon: "🩸",
+                rating: "⭐⭐⭐⭐",
+                description: "Grilled chicken blood cakes on sticks.",
+                details: "Coagulated chicken blood cut into squares, grilled on skewers - named after its resemblance to Betamax tapes."
+            },
+            {
+                name: "Adidas",
+                category: "snack",
+                icon: "🦶",
+                rating: "⭐⭐⭐⭐",
+                description: "Grilled chicken feet, named after the shoe brand.",
+                details: "Marinated chicken feet grilled until crispy, served with spicy vinegar - a unique street food."
+            },
+            {
+                name: "Helmet",
+                category: "snack",
+                icon: "🐔",
+                rating: "⭐⭐⭐⭐",
+                description: "Grilled chicken heads on skewers.",
+                details: "Chicken heads marinated and grilled, considered a delicacy by adventurous eaters."
+            },
+            {
+                name: "Proven",
+                category: "snack",
+                icon: "🍖",
+                rating: "⭐⭐⭐⭐",
+                description: "Grilled chicken gizzards on sticks.",
+                details: "Chicken gizzards marinated in soy sauce and spices, then grilled - chewy and flavorful."
+            },
+            {
+                name: "Pork Barbecue Iloilo Style",
+                category: "main",
+                icon: "🥓",
+                rating: "⭐⭐⭐⭐⭐",
+                description: "Sweet marinated pork skewers with annatto oil.",
+                details: "Pork pieces marinated in sweet-savory sauce with annatto, grilled and basted continuously for maximum flavor."
+            },
+            {
+                name: "Liempo BBQ",
+                category: "main",
+                icon: "🥓",
+                rating: "⭐⭐⭐⭐⭐",
+                description: "Grilled pork belly slabs with crispy edges.",
+                details: "Thick pork belly slices marinated and grilled, with crispy fat and tender meat - best with soy-vinegar dip."
+            },
+            {
+                name: "Grilled Squid (Inihaw na Pusit)",
+                category: "main",
+                icon: "🦑",
+                rating: "⭐⭐⭐⭐⭐",
+                description: "Whole squid grilled and stuffed with tomatoes and onions.",
+                details: "Fresh squid stuffed with tomatoes, onions, and sometimes its own ink, then grilled over charcoal."
+            },
+            {
+                name: "Grilled Tilapia",
+                category: "main",
+                icon: "🐟",
+                rating: "⭐⭐⭐⭐",
+                description: "Whole tilapia grilled with salt and pepper.",
+                details: "Fresh tilapia rubbed with salt, pepper, and stuffed with tomatoes, then grilled until skin is crispy."
+            },
+            {
+                name: "Inihaw na Baboy (Grilled Pork)",
+                category: "main",
+                icon: "🥩",
+                rating: "⭐⭐⭐⭐",
+                description: "Various pork cuts grilled over charcoal.",
+                details: "Different pork cuts marinated and grilled, served with pickled papaya and soy-vinegar sauce."
+            },
+            {
+                name: "Camaron Rebosado",
+                category: "main",
+                icon: "🦐",
+                rating: "⭐⭐⭐⭐",
+                description: "Battered and fried shrimp with sweet and sour sauce.",
+                details: "Large shrimp coated in light batter, deep-fried until golden, served with sweet and sour dipping sauce."
+            },
+            {
+                name: "Rellenong Alimasag",
+                category: "main",
+                icon: "🦀",
+                rating: "⭐⭐⭐⭐⭐",
+                description: "Stuffed crab shells with crab meat mixture.",
+                details: "Crab meat mixed with vegetables and seasonings, stuffed back into the shell and baked or fried."
+            },
+            {
+                name: "Baked Scallops",
+                category: "main",
+                icon: "🦪",
+                rating: "⭐⭐⭐⭐⭐",
+                description: "Scallops baked with cheese and butter.",
+                details: "Fresh scallops topped with butter, garlic, and cheese, then baked until golden and bubbly."
+            },
+            {
+                name: "Buttered Shrimp",
+                category: "main",
+                icon: "🦐",
+                rating: "⭐⭐⭐⭐⭐",
+                description: "Shrimp sautéed in rich garlic butter sauce.",
+                details: "Fresh shrimp cooked in loads of butter and garlic, sometimes with Sprite for sweetness."
+            },
+            {
+                name: "Sweet and Sour Fish Fillet",
+                category: "main",
+                icon: "🐟",
+                rating: "⭐⭐⭐⭐",
+                description: "Fried fish with sweet and sour sauce and vegetables.",
+                details: "Crispy fried fish fillet topped with colorful sweet and sour sauce with bell peppers and pineapple."
+            },
+            {
+                name: "Chopsuey",
+                category: "main",
+                icon: "🥦",
+                rating: "⭐⭐⭐⭐",
+                description: "Mixed vegetables stir-fry with meat in sauce.",
+                details: "Assorted vegetables stir-fried with pork, chicken, or seafood in a light savory sauce."
+            },
+            {
+                name: "Lumpiang Sariwa",
+                category: "snack",
+                icon: "🌯",
+                rating: "⭐⭐⭐⭐",
+                description: "Fresh spring rolls with vegetables and peanut sauce.",
+                details: "Soft crepe filled with sautéed vegetables, shrimp or pork, topped with sweet garlic-peanut sauce."
+            },
+            {
+                name: "Dynamite Lumpia",
+                category: "snack",
+                icon: "🌶️",
+                rating: "⭐⭐⭐⭐⭐",
+                description: "Deep-fried spring rolls stuffed with cheese-filled chili peppers.",
+                details: "Green chili peppers stuffed with cheese, wrapped in spring roll wrappers and deep-fried - spicy and addictive."
+            },
+            {
+                name: "Lumpiang Gulay",
+                category: "snack",
+                icon: "🥕",
+                rating: "⭐⭐⭐⭐",
+                description: "Vegetable spring rolls, fried until crispy.",
+                details: "Mixed vegetables wrapped in spring roll wrappers and deep-fried, served with sweet chili or vinegar sauce."
+            },
+            {
+                name: "Kikiam",
+                category: "snack",
+                icon: "🌭",
+                rating: "⭐⭐⭐⭐",
+                description: "Ground pork and vegetables in bean curd sheets, fried.",
+                details: "Chinese-Filipino snack made of ground pork and vegetables wrapped in bean curd skin, deep-fried and sliced."
+            },
+            {
+                name: "Squid Balls",
+                category: "snack",
+                icon: "🦑",
+                rating: "⭐⭐⭐⭐",
+                description: "Deep-fried squid paste balls, street food favorite.",
+                details: "Ground squid formed into balls and deep-fried, served on skewers with sweet or spicy sauce."
+            },
+            {
+                name: "Chicken Balls",
+                category: "snack",
+                icon: "🐔",
+                rating: "⭐⭐⭐⭐",
+                description: "Deep-fried chicken paste balls on sticks.",
+                details: "Ground chicken formed into balls, deep-fried and skewered, served with various sauces."
+            },
+            {
+                name: "Tempura (Filipino Style)",
+                category: "snack",
+                icon: "🦐",
+                rating: "⭐⭐⭐⭐",
+                description: "Shrimp and vegetables in batter, deep-fried.",
+                details: "Filipino version of tempura, usually thicker batter, served as street food or appetizer."
+            },
+            {
+                name: "Cheese Sticks",
+                category: "snack",
+                icon: "🧀",
+                rating: "⭐⭐⭐⋆",
+                description: "Spring rolls filled with cheese, deep-fried.",
+                details: "Cheese wrapped in spring roll wrappers and deep-fried until crispy - popular snack for kids and adults."
+            },
+            {
+                name: "Pizza Bread (Local Bakery)",
+                category: "snack",
+                icon: "🍕",
+                rating: "⭐⭐⭐⭐",
+                description: "Bread topped with tomato sauce and cheese.",
+                details: "Local bakery version of pizza using bread dough, topped with simple tomato sauce and cheese."
+            },
+            {
+                name: "Kababayan",
+                category: "snack",
+                icon: "🥞",
+                rating: "⭐⭐⭐⭐",
+                description: "Small round sponge cakes, Filipino muffins.",
+                details: "Soft, slightly sweet mini cakes sold in local bakeries, perfect with coffee or as a snack."
+            },
+            {
+                name: "Mamon",
+                category: "snack",
+                icon: "🧁",
+                rating: "⭐⭐⭐⭐",
+                description: "Soft, buttery sponge cakes dusted with butter and sugar.",
+                details: "Light and airy sponge cakes brushed with butter and topped with sugar and cheese - Filipino bakery classic."
+            },
+            {
+                name: "Brazo de Mercedes",
+                category: "dessert",
+                icon: "🎂",
+                rating: "⭐⭐⭐⭐⭐",
+                description: "Meringue roll filled with custard cream.",
+                details: "Light meringue rolled around rich custard filling, a Spanish-Filipino dessert perfect for celebrations."
+            },
+            {
+                name: "Pianono",
+                category: "dessert",
+                icon: "🎂",
+                rating: "⭐⭐⭐⭐",
+                description: "Sponge cake roll filled with buttercream or custard.",
+                details: "Thin sponge cake rolled with various fillings like buttercream, ube, or custard - a Filipino jelly roll."
+            },
+            {
+                name: "Crema de Fruta",
+                category: "dessert",
+                icon: "🍰",
+                rating: "⭐⭐⭐⭐⭐",
+                description: "Layered sponge cake with custard and fruit cocktail topping.",
+                details: "Sponge cake layered with rich custard and topped with colorful fruit cocktail in gelatin - a festive dessert."
+            },
+            {
+                name: "Chocolate Crinkles",
+                category: "dessert",
+                icon: "🍪",
+                rating: "⭐⭐⭐⭐",
+                description: "Fudgy chocolate cookies rolled in powdered sugar.",
+                details: "Rich chocolate cookies with crackled powdered sugar coating, popular during Christmas but available year-round."
+            }
+        ];
+
+        let currentFilter = 'all';
+
+        function renderFoods(foodsToRender) {
+            const grid = document.getElementById('foodsGrid');
+            grid.innerHTML = '';
+            
+            foodsToRender.forEach((food, index) => {
+                const card = document.createElement('div');
+                card.className = 'food-card';
+                card.onclick = () => openModal(food);
+                card.innerHTML = `
+                    <div class="food-image">${food.icon}</div>
+                    <div class="food-content">
+                        <div class="food-category">${food.category}</div>
+                        <div class="food-name">${food.name}</div>
+                        <div class="rating">${food.rating}</div>
+                        <div class="food-description">${food.description}</div>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        function filterFoods() {
+            const searchTerm = document.getElementById('searchBox').value.toLowerCase();
+            let filtered = foods;
+
+            if (currentFilter !== 'all') {
+                filtered = filtered.filter(food => food.category === currentFilter);
+            }
+
+            if (searchTerm) {
+                filtered = filtered.filter(food => 
+                    food.name.toLowerCase().includes(searchTerm) || 
+                    food.description.toLowerCase().includes(searchTerm)
+                );
+            }
+
+            renderFoods(filtered);
+        }
+
+        function openModal(food) {
+            const modal = document.getElementById('foodModal');
+            const content = document.getElementById('modalContent');
+            
+            content.innerHTML = `
+                <span class="close-btn" onclick="closeModal()">&times;</span>
+                <div style="text-align: center; font-size: 5em; margin-bottom: 20px;">${food.icon}</div>
+                <h2 style="color: #667eea; margin-bottom: 10px;">${food.name}</h2>
+                <div class="food-category" style="margin-bottom: 15px;">${food.category}</div>
+                <div class="rating" style="margin-bottom: 20px;">${food.rating}</div>
+                <p style="color: #666; line-height: 1.8; font-size: 1.1em;">${food.details}</p>
+            `;
+            
+            modal.style.display = 'block';
+        }
+
+        function closeModal() {
+            document.getElementById('foodModal').style.display = 'none';
+        }
+
+        // Event listeners
+        document.getElementById('searchBox').addEventListener('input', filterFoods);
+
+        document.querySelectorAll('.filter-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+                currentFilter = this.dataset.category;
+                filterFoods();
+            });
+        });
+
+        window.onclick = function(event) {
+            const modal = document.getElementById('foodModal');
+            if (event.target === modal) {
+                closeModal();
+            }
+        }
+
+        // Initial render
+        renderFoods(foods);
+    </script>
+</body>
+</html>
